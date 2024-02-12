@@ -8,12 +8,40 @@ const pane = new Pane();
 // initialize the scene
 const scene = new THREE.Scene();
 
+// add texture loader
+const textureLoader = new THREE.TextureLoader();
+
+// add textures
+const sunTexture = textureLoader.load("/textures/2k_sun.jpg");
+const mercuryTexture = textureLoader.load("/textures/2k_mercury.jpg");
+const venusTexture = textureLoader.load("/textures/2k_venus_surface.jpg");
+const earthTexture = textureLoader.load("/textures/2k_earth_daymap.jpg");
+const marsTexture = textureLoader.load("/textures/2k_mars.jpg");
+const moonTexture = textureLoader.load("/textures/2k_moon.jpg");
+
+// add materials
+const sunMaterial = new THREE.MeshBasicMaterial({
+  map: sunTexture,
+});
+const mercuryMaterial = new THREE.MeshStandardMaterial({
+  map: mercuryTexture,
+});
+const venusMaterial = new THREE.MeshStandardMaterial({
+  map: venusTexture,
+});
+const earthMaterial = new THREE.MeshStandardMaterial({
+  map: earthTexture,
+});
+const marsMaterial = new THREE.MeshStandardMaterial({
+  map: marsTexture,
+});
+const moonMaterial = new THREE.MeshStandardMaterial({
+  map: moonTexture,
+});
+
 const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
 // Create Sun
-const sunMaterial = new THREE.MeshBasicMaterial({
-  color: "yellow",
-});
 
 const sun = new THREE.Mesh(sphereGeometry, sunMaterial);
 sun.scale.setScalar(5);
@@ -75,6 +103,37 @@ const planets = [
     ],
   },
 ];
+
+const createPlanet = (planet) => {
+  const planetMesh = new THREE.Mesh(sphereGeometry, planet.material);
+  planetMesh.scale.setScalar(planet.radius);
+  planetMesh.position.x = planet.distance;
+
+  return planetMesh;
+};
+
+const createMoon = (moon) => {
+  const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
+  moonMesh.scale.setScalar(moon.radius);
+  moonMesh.position.x = moon.distance;
+
+  return moonMesh;
+};
+
+const planetMeshes = planets.map((planet) => {
+  const planetMesh = createPlanet(planet);
+  scene.add(planetMesh);
+
+  planet.moons.forEach((moon) => {
+    const moonMesh = createMoon(moon);
+    planetMesh.add(moonMesh);
+  });
+
+  return planetMesh;
+});
+
+const ambientLight = new THREE.AmbientLight("white", 0.5);
+scene.add(ambientLight);
 
 // initialize the camera
 const camera = new THREE.PerspectiveCamera(
