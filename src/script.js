@@ -8,7 +8,36 @@ const pane = new Pane();
 // initialize the scene
 const scene = new THREE.Scene();
 
-// add stuff here
+const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+
+// Create Sun
+const sunMaterial = new THREE.MeshBasicMaterial({
+  color: "yellow",
+});
+
+const sun = new THREE.Mesh(sphereGeometry, sunMaterial);
+sun.scale.setScalar(5);
+
+scene.add(sun);
+
+// Create Earth
+const earthMaterial = new THREE.MeshBasicMaterial({
+  color: "blue",
+});
+
+const earth = new THREE.Mesh(sphereGeometry, earthMaterial);
+earth.position.x = 10;
+
+scene.add(earth);
+
+// Create Moon
+const moonMaterial = new THREE.MeshBasicMaterial({
+  color: "grey",
+});
+const moon = new THREE.Mesh(sphereGeometry, moonMaterial);
+moon.scale.setScalar(0.3);
+moon.position.x = 2;
+earth.add(moon);
 
 // initialize the camera
 const camera = new THREE.PerspectiveCamera(
@@ -30,7 +59,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.maxDistance = 200;
-controls.minDistance = 20
+controls.minDistance = 20;
 
 // add resize listener
 window.addEventListener("resize", () => {
@@ -45,6 +74,5 @@ const renderloop = () => {
   renderer.render(scene, camera);
   window.requestAnimationFrame(renderloop);
 };
-
 
 renderloop();
